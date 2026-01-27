@@ -1,0 +1,186 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+
+@layer base {
+  :root {
+    /* Deep slate/navy foundation */
+    --background: 220 20% 97%;
+    --foreground: 222 47% 11%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+
+    /* Deep navy primary */
+    --primary: 222 47% 20%;
+    --primary-foreground: 45 100% 96%;
+
+    /* Soft cream secondary */
+    --secondary: 45 30% 96%;
+    --secondary-foreground: 222 47% 20%;
+
+    --muted: 220 14% 96%;
+    --muted-foreground: 220 9% 46%;
+
+    /* Warm amber accent */
+    --accent: 38 92% 50%;
+    --accent-foreground: 222 47% 11%;
+
+    /* Position colors */
+    --for: 152 69% 31%;
+    --for-foreground: 0 0% 100%;
+    --against: 0 72% 51%;
+    --against-foreground: 0 0% 100%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 38 92% 50%;
+
+    --radius: 0.75rem;
+
+    /* Custom properties */
+    --shadow-elegant: 0 4px 20px -4px hsl(222 47% 11% / 0.08);
+    --shadow-card: 0 1px 3px hsl(222 47% 11% / 0.04), 0 4px 12px hsl(222 47% 11% / 0.06);
+    --shadow-hover: 0 8px 30px hsl(222 47% 11% / 0.12);
+
+    --sidebar-background: 222 47% 11%;
+    --sidebar-foreground: 45 30% 96%;
+    --sidebar-primary: 38 92% 50%;
+    --sidebar-primary-foreground: 222 47% 11%;
+    --sidebar-accent: 222 40% 18%;
+    --sidebar-accent-foreground: 45 30% 96%;
+    --sidebar-border: 222 40% 20%;
+    --sidebar-ring: 38 92% 50%;
+  }
+
+  .dark {
+    --background: 222 47% 8%;
+    --foreground: 45 30% 96%;
+
+    --card: 222 47% 11%;
+    --card-foreground: 45 30% 96%;
+
+    --popover: 222 47% 11%;
+    --popover-foreground: 45 30% 96%;
+
+    --primary: 45 100% 96%;
+    --primary-foreground: 222 47% 11%;
+
+    --secondary: 222 40% 18%;
+    --secondary-foreground: 45 30% 96%;
+
+    --muted: 222 40% 15%;
+    --muted-foreground: 220 9% 60%;
+
+    --accent: 38 92% 50%;
+    --accent-foreground: 222 47% 11%;
+
+    --for: 152 69% 40%;
+    --against: 0 72% 55%;
+
+    --destructive: 0 62% 45%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 222 40% 20%;
+    --input: 222 40% 20%;
+    --ring: 38 92% 50%;
+
+    --sidebar-background: 222 47% 6%;
+    --sidebar-foreground: 45 30% 96%;
+    --sidebar-primary: 38 92% 50%;
+    --sidebar-primary-foreground: 222 47% 11%;
+    --sidebar-accent: 222 40% 12%;
+    --sidebar-accent-foreground: 45 30% 96%;
+    --sidebar-border: 222 40% 15%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Inter', sans-serif;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Playfair Display', serif;
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply bg-card/80 backdrop-blur-sm border border-border/50 shadow-[var(--shadow-card)];
+  }
+
+  .position-for {
+    @apply bg-[hsl(var(--for))] text-[hsl(var(--for-foreground))];
+  }
+
+  .position-against {
+    @apply bg-[hsl(var(--against))] text-[hsl(var(--against-foreground))];
+  }
+
+  .speaking-point {
+    @apply relative pl-8 before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:rounded-full;
+  }
+
+  .speaking-point-for {
+    @apply before:bg-[hsl(var(--for))];
+  }
+
+  .speaking-point-against {
+    @apply before:bg-[hsl(var(--against))];
+  }
+}
+
+@layer utilities {
+  .animate-fade-in {
+    animation: fadeIn 0.4s ease-out forwards;
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.5s ease-out forwards;
+  }
+
+  .animate-scale-in {
+    animation: scaleIn 0.3s ease-out forwards;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes slideUp {
+    from { 
+      opacity: 0; 
+      transform: translateY(20px); 
+    }
+    to { 
+      opacity: 1; 
+      transform: translateY(0); 
+    }
+  }
+
+  @keyframes scaleIn {
+    from { 
+      opacity: 0; 
+      transform: scale(0.95); 
+    }
+    to { 
+      opacity: 1; 
+      transform: scale(1); 
+    }
+  }
+}
