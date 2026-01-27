@@ -24,13 +24,14 @@ interface DebateGeneratorProps {
   onSave: (entry: DebateEntry) => Promise<boolean>;
   viewingEntry: DebateEntry | null;
   onClearView: () => void;
+  initialMode?: Mode;
 }
 
-export function DebateGenerator({ onSave, viewingEntry, onClearView }: DebateGeneratorProps) {
+export function DebateGenerator({ onSave, viewingEntry, onClearView, initialMode }: DebateGeneratorProps) {
   const { settings: appSettings } = useSettings();
   const { user } = useAuth();
   
-  const [mode, setMode] = useState<Mode>('debunk');
+  const [mode, setMode] = useState<Mode>(initialMode || 'debunk');
   const [topic, setTopic] = useState('');
   const [position, setPosition] = useState<Position>('for');
   const [speakerFirst, setSpeakerFirst] = useState<Speaker>('ai');

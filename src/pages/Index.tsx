@@ -1,59 +1,27 @@
-import { useState, useEffect } from 'react';
-import { DebateEntry } from '@/types/debate';
-import { DebateGenerator } from '@/components/DebateGenerator';
-import { LibrarySidebar } from '@/components/LibrarySidebar';
+import { Navbar } from '@/components/home/Navbar';
+import { HeroSection } from '@/components/home/HeroSection';
+import { FeatureHighlights } from '@/components/home/FeatureHighlights';
+import { HowItWorks } from '@/components/home/HowItWorks';
 import { SettingsMenu } from '@/components/SettingsMenu';
-import { UserMenu } from '@/components/UserMenu';
-import { useLibrary } from '@/hooks/useLibrary';
-import { useAuth } from '@/contexts/AuthContext';
 
 const Index = () => {
-  const { user } = useAuth();
-  const { entries, saveEntry, deleteEntry } = useLibrary();
-  const [selectedEntry, setSelectedEntry] = useState<DebateEntry | null>(null);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-
-  const handleSelectEntry = (entry: DebateEntry) => {
-    setSelectedEntry(entry);
-    setSidebarOpen(false);
-  };
-
-  const handleDeleteEntry = async (entryId: string) => {
-    await deleteEntry(entryId);
-    if (selectedEntry?.id === entryId) {
-      setSelectedEntry(null);
-    }
-  };
-
-  const handleClearView = () => {
-    setSelectedEntry(null);
-  };
-
   return (
-    <div className="min-h-screen flex">
+    <div className="min-h-screen">
       <SettingsMenu />
-      <UserMenu />
+      <Navbar />
       
-      {user && (
-        <LibrarySidebar
-          entries={entries}
-          selectedId={selectedEntry?.id ?? null}
-          onSelect={handleSelectEntry}
-          onDelete={handleDeleteEntry}
-          isOpen={sidebarOpen}
-          onToggle={() => setSidebarOpen(!sidebarOpen)}
-        />
-      )}
-
-      <main className={`flex-1 min-h-screen overflow-y-auto ${user ? '' : 'w-full'}`}>
-        <div className="p-6 md:p-10 lg:p-16 pt-16">
-          <DebateGenerator
-            onSave={saveEntry}
-            viewingEntry={selectedEntry}
-            onClearView={handleClearView}
-          />
-        </div>
+      <main className="pt-16">
+        <HeroSection />
+        <FeatureHighlights />
+        <HowItWorks />
       </main>
+      
+      {/* Footer */}
+      <footer className="py-8 border-t border-border/50">
+        <div className="max-w-6xl mx-auto px-6 text-center text-sm text-muted-foreground">
+          <p>Practice debating with AI-powered feedback</p>
+        </div>
+      </footer>
     </div>
   );
 };
