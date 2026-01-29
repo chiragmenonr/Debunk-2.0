@@ -10,11 +10,7 @@ export function HeroSection() {
       </div>
       
       <div className="relative max-w-4xl mx-auto text-center px-6">
-        {/* App Name */}
-        <h2 className="font-serif text-5xl md:text-6xl lg:text-7xl font-bold text-accent mb-6 animate-fade-in tracking-tight">
-          Debunk
-        </h2>
-        
+        {/* Headline */}
         {/* Headline */}
         <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6 animate-fade-in">
           Think Sharper.
