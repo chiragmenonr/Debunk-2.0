@@ -19,18 +19,24 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useSettings } from '@/contexts/SettingsContext';
 import { useAuth } from '@/contexts/AuthContext';
-
 interface DebateGeneratorProps {
   onSave: (entry: DebateEntry) => Promise<boolean>;
   viewingEntry: DebateEntry | null;
   onClearView: () => void;
   initialMode?: Mode;
 }
-
-export function DebateGenerator({ onSave, viewingEntry, onClearView, initialMode }: DebateGeneratorProps) {
-  const { settings: appSettings } = useSettings();
-  const { user } = useAuth();
-  
+export function DebateGenerator({
+  onSave,
+  viewingEntry,
+  onClearView,
+  initialMode
+}: DebateGeneratorProps) {
+  const {
+    settings: appSettings
+  } = useSettings();
+  const {
+    user
+  } = useAuth();
   const [mode, setMode] = useState<Mode>(initialMode || 'debunk');
   const [topic, setTopic] = useState('');
   const [position, setPosition] = useState<Position>('for');
@@ -53,7 +59,6 @@ export function DebateGenerator({ onSave, viewingEntry, onClearView, initialMode
   useEffect(() => {
     setLanguageTone(appSettings.defaultTone);
   }, [appSettings.defaultTone]);
-
   const createSettings = (): DebateSettings => ({
     topic,
     mode,
@@ -65,41 +70,36 @@ export function DebateGenerator({ onSave, viewingEntry, onClearView, initialMode
     numberOfPoints,
     evidenceLevel,
     enableTimer: appSettings.enableTimer,
-    enableCounterArguments: appSettings.enableCounterArguments,
+    enableCounterArguments: appSettings.enableCounterArguments
   });
-
   const handleGenerate = async () => {
     if (!topic.trim()) return;
-
     const settings = createSettings();
-
     if (mode === 'debate') {
       setDebateSettings(settings);
       setIsDebating(true);
       return;
     }
-
     setIsGenerating(true);
     setGeneratedPoints(null);
-
     try {
-      const { data, error } = await supabase.functions.invoke('generate-debate-points', {
+      const {
+        data,
+        error
+      } = await supabase.functions.invoke('generate-debate-points', {
         body: settings
       });
-
       if (error) {
         console.error('Edge function error:', error);
         toast.error(error.message || 'Failed to generate speaking points');
         setIsGenerating(false);
         return;
       }
-
       if (data.error) {
         toast.error(data.error);
         setIsGenerating(false);
         return;
       }
-
       setGeneratedPoints(data.speakingPoints);
       setCurrentSettings(settings);
     } catch (err) {
@@ -109,17 +109,14 @@ export function DebateGenerator({ onSave, viewingEntry, onClearView, initialMode
       setIsGenerating(false);
     }
   };
-
   const handleSaveToLibrary = async () => {
     if (!generatedPoints || !currentSettings) return;
-
     const entry: DebateEntry = {
       id: crypto.randomUUID(),
       createdAt: new Date(),
       settings: currentSettings,
-      speakingPoints: generatedPoints,
+      speakingPoints: generatedPoints
     };
-
     const success = await onSave(entry);
     if (success) {
       setTopic('');
@@ -127,21 +124,17 @@ export function DebateGenerator({ onSave, viewingEntry, onClearView, initialMode
       setCurrentSettings(null);
     }
   };
-
   const handleSaveDebate = async (history: ChatMessage[], score: number) => {
     if (!debateSettings) return;
-
     const entry: DebateEntry = {
       id: crypto.randomUUID(),
       createdAt: new Date(),
       settings: debateSettings,
       conversationHistory: history,
-      totalScore: score,
+      totalScore: score
     };
-
     await onSave(entry);
   };
-
   const handleReset = () => {
     // Don't reset settings - only reset results
     setGeneratedPoints(null);
@@ -152,7 +145,6 @@ export function DebateGenerator({ onSave, viewingEntry, onClearView, initialMode
     setTotalScore(0);
     onClearView();
   };
-
   const handleFullReset = () => {
     setTopic('');
     setPosition('for');
@@ -177,9 +169,7 @@ export function DebateGenerator({ onSave, viewingEntry, onClearView, initialMode
   if (viewingEntry) {
     const s = viewingEntry.settings;
     const isDebateEntry = s.mode === 'debate' && viewingEntry.conversationHistory;
-    
-    return (
-      <div className="max-w-4xl mx-auto">
+    return <div className="max-w-4xl mx-auto">
         <div className="flex items-center justify-between mb-8">
           <h1 className="font-serif text-2xl md:text-3xl font-bold">
             Saved {s.mode === 'debate' ? 'Debate' : 'Debunk'}
@@ -223,76 +213,42 @@ export function DebateGenerator({ onSave, viewingEntry, onClearView, initialMode
             <p className="font-medium mt-1">{s.topic}</p>
           </div>
 
-          {viewingEntry.totalScore !== undefined && (
-            <div className="pt-4 border-t">
+          {viewingEntry.totalScore !== undefined && <div className="pt-4 border-t">
               <span className="text-muted-foreground text-sm">Total Score</span>
               <p className="font-bold text-2xl text-primary">{viewingEntry.totalScore}</p>
-            </div>
-          )}
+            </div>}
         </div>
 
         {/* Content */}
-        {isDebateEntry && viewingEntry.conversationHistory ? (
-          <div className="space-y-4">
+        {isDebateEntry && viewingEntry.conversationHistory ? <div className="space-y-4">
             <h2 className="font-serif text-xl font-semibold">Conversation History</h2>
-            {viewingEntry.conversationHistory.map((message, index) => (
-              <div
-                key={message.id || index}
-                className={cn(
-                  "p-4 rounded-lg",
-                  message.role === 'ai' ? "bg-muted/50" : "bg-primary/10"
-                )}
-              >
+            {viewingEntry.conversationHistory.map((message, index) => <div key={message.id || index} className={cn("p-4 rounded-lg", message.role === 'ai' ? "bg-muted/50" : "bg-primary/10")}>
                 <p className="text-xs font-medium mb-2 text-muted-foreground">
                   {message.role === 'ai' ? 'AI' : 'You'}
                 </p>
                 <p className="text-sm whitespace-pre-wrap">{message.content}</p>
-              </div>
-            ))}
-          </div>
-        ) : viewingEntry.speakingPoints ? (
-          <>
+              </div>)}
+          </div> : viewingEntry.speakingPoints ? <>
             <h2 className="font-serif text-xl font-semibold mb-4">Generated Arguments to Debunk</h2>
             <div className="space-y-6">
-              {viewingEntry.speakingPoints.map((point, index) => (
-                <SpeakingPointCard
-                  key={point.id}
-                  point={point}
-                  index={index}
-                  position={s.position}
-                />
-              ))}
+              {viewingEntry.speakingPoints.map((point, index) => <SpeakingPointCard key={point.id} point={point} index={index} position={s.position} />)}
             </div>
-          </>
-        ) : null}
-      </div>
-    );
+          </> : null}
+      </div>;
   }
 
   // Interactive debate mode
   if (isDebating && debateSettings) {
-    return (
-      <InteractiveDebate
-        settings={debateSettings}
-        speakerFirst={speakerFirst}
-        onReset={handleReset}
-      />
-    );
+    return <InteractiveDebate settings={debateSettings} speakerFirst={speakerFirst} onReset={handleReset} />;
   }
 
   // Generated points view (Debunk mode results)
   if (generatedPoints && currentSettings) {
-    return (
-      <div className="max-w-4xl mx-auto">
+    return <div className="max-w-4xl mx-auto">
         <div className="flex items-center justify-between mb-8">
           <div>
             <div className="flex items-center gap-3 mb-2">
-              <span className={cn(
-                "text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide",
-                currentSettings.position === 'for' 
-                  ? "bg-position-for/10 text-position-for" 
-                  : "bg-position-against/10 text-position-against"
-              )}>
+              <span className={cn("text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide", currentSettings.position === 'for' ? "bg-position-for/10 text-position-for" : "bg-position-against/10 text-position-against")}>
                 {currentSettings.position}
               </span>
               <span className="text-xs text-muted-foreground capitalize">
@@ -308,42 +264,27 @@ export function DebateGenerator({ onSave, viewingEntry, onClearView, initialMode
               <RotateCcw className="w-4 h-4 mr-2" />
               New Topic
             </Button>
-            {user && (
-              <Button onClick={handleSaveToLibrary} className="bg-accent hover:bg-accent/90 text-accent-foreground">
+            {user && <Button onClick={handleSaveToLibrary} className="bg-accent hover:bg-accent/90 text-accent-foreground">
                 Save to Library
-              </Button>
-            )}
+              </Button>}
           </div>
         </div>
 
         {/* Practice Timer */}
-        {appSettings.enableTimer && (
-          <div className="mb-6">
+        {appSettings.enableTimer && <div className="mb-6">
             <PracticeTimer initialMinutes={currentSettings.noTimeLimit ? 15 : currentSettings.timeLimit} />
-          </div>
-        )}
+          </div>}
 
         <div className="space-y-6">
-          {generatedPoints.map((point, index) => (
-            <SpeakingPointCard
-              key={point.id}
-              point={point}
-              index={index}
-              position={currentSettings.position}
-            />
-          ))}
+          {generatedPoints.map((point, index) => <SpeakingPointCard key={point.id} point={point} index={index} position={currentSettings.position} />)}
         </div>
-      </div>
-    );
+      </div>;
   }
 
   // Input form view
-  return (
-    <div className="max-w-2xl mx-auto">
+  return <div className="max-w-2xl mx-auto">
       <div className="text-center mb-10">
-        <h1 className="font-serif text-3xl md:text-4xl font-bold mb-3">
-          Debate Prep
-        </h1>
+        <h1 className="font-serif text-3xl md:text-4xl font-bold mb-3">Debunk Mode</h1>
         <p className="text-muted-foreground max-w-md mx-auto">
           Generate structured, persuasive arguments with evidence from credible sources
         </p>
@@ -358,9 +299,7 @@ export function DebateGenerator({ onSave, viewingEntry, onClearView, initialMode
           </label>
           <ModeToggle value={mode} onChange={setMode} />
           <p className="text-xs text-muted-foreground">
-            {mode === 'debunk' 
-              ? 'Generate all speaking points at once' 
-              : 'Interactive back-and-forth debate with AI'}
+            {mode === 'debunk' ? 'Generate all speaking points at once' : 'Interactive back-and-forth debate with AI'}
           </p>
         </div>
 
@@ -370,12 +309,7 @@ export function DebateGenerator({ onSave, viewingEntry, onClearView, initialMode
             <span className="w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-bold">2</span>
             Debate Topic
           </label>
-          <Textarea
-            value={topic}
-            onChange={(e) => setTopic(e.target.value)}
-            placeholder="Enter a statement, claim, or question to be debated..."
-            className="min-h-[100px] resize-none text-base"
-          />
+          <Textarea value={topic} onChange={e => setTopic(e.target.value)} placeholder="Enter a statement, claim, or question to be debated..." className="min-h-[100px] resize-none text-base" />
         </div>
 
         {/* Position Toggle */}
@@ -388,24 +322,19 @@ export function DebateGenerator({ onSave, viewingEntry, onClearView, initialMode
         </div>
 
         {/* Who Speaks First - Only in Debate mode */}
-        {mode === 'debate' && (
-          <div className="space-y-3">
+        {mode === 'debate' && <div className="space-y-3">
             <label className="text-sm font-medium flex items-center gap-2">
               <span className="w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-bold">4</span>
               Who Speaks First
             </label>
             <SpeakerToggle value={speakerFirst} onChange={setSpeakerFirst} />
             <p className="text-xs text-muted-foreground">
-              {speakerFirst === 'ai' 
-                ? 'AI presents arguments, you rebut each one' 
-                : 'You present arguments, AI rebuts each one'}
+              {speakerFirst === 'ai' ? 'AI presents arguments, you rebut each one' : 'You present arguments, AI rebuts each one'}
             </p>
-          </div>
-        )}
+          </div>}
 
         {/* Language & Tone Slider - Only in Debate mode */}
-        {mode === 'debate' && (
-          <div className="space-y-3">
+        {mode === 'debate' && <div className="space-y-3">
             <label className="text-sm font-medium flex items-center gap-2">
               <span className="w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-bold">
                 5
@@ -413,17 +342,13 @@ export function DebateGenerator({ onSave, viewingEntry, onClearView, initialMode
               Language & Tone
             </label>
             <LanguageToneSelector value={languageTone} onChange={setLanguageTone} />
-            {languageTone === 'coach' && (
-              <p className="text-xs text-amber-600 dark:text-amber-400">
+            {languageTone === 'coach' && <p className="text-xs text-amber-600 dark:text-amber-400">
                 Coach mode provides feedback and strategy tips instead of arguing a position.
-              </p>
-            )}
-          </div>
-        )}
+              </p>}
+          </div>}
 
         {/* Difficulty - Only in Debunk mode */}
-        {mode === 'debunk' && (
-          <div className="space-y-3">
+        {mode === 'debunk' && <div className="space-y-3">
             <label className="text-sm font-medium flex items-center gap-2">
               <span className="w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-bold">
                 5
@@ -431,61 +356,36 @@ export function DebateGenerator({ onSave, viewingEntry, onClearView, initialMode
               Difficulty Level
             </label>
             <DifficultySelector value={difficulty} onChange={setDifficulty} />
-          </div>
-        )}
+          </div>}
 
         {/* Time Limit - Only in Debunk mode */}
-        {mode === 'debunk' && (
-          <div className="space-y-3">
+        {mode === 'debunk' && <div className="space-y-3">
             <label className="text-sm font-medium flex items-center gap-2">
               <span className="w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-bold">6</span>
               Speaking Time
             </label>
-            <SettingsSlider
-              label=""
-              value={timeLimit}
-              onChange={setTimeLimit}
-              min={1}
-              max={15}
-              disabled={noTimeLimit}
-              displayValue={`${timeLimit} min`}
-            />
+            <SettingsSlider label="" value={timeLimit} onChange={setTimeLimit} min={1} max={15} disabled={noTimeLimit} displayValue={`${timeLimit} min`} />
             <div className="flex items-center gap-2">
-              <Checkbox
-                id="noTimeLimit"
-                checked={noTimeLimit}
-                onCheckedChange={(checked) => setNoTimeLimit(checked as boolean)}
-              />
+              <Checkbox id="noTimeLimit" checked={noTimeLimit} onCheckedChange={checked => setNoTimeLimit(checked as boolean)} />
               <label htmlFor="noTimeLimit" className="text-sm text-muted-foreground cursor-pointer">
                 No time limit (fully expanded points)
               </label>
             </div>
-          </div>
-        )}
+          </div>}
 
         {/* Number of Points - Only in Debunk mode */}
-        {mode === 'debunk' && (
-          <div className="space-y-3">
+        {mode === 'debunk' && <div className="space-y-3">
             <label className="text-sm font-medium flex items-center gap-2">
               <span className="w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-bold">
                 7
               </span>
               Number of Arguments to Debunk
             </label>
-            <SettingsSlider
-              label=""
-              value={numberOfPoints}
-              onChange={setNumberOfPoints}
-              min={1}
-              max={7}
-              displayValue={`${numberOfPoints} argument${numberOfPoints > 1 ? 's' : ''}`}
-            />
-          </div>
-        )}
+            <SettingsSlider label="" value={numberOfPoints} onChange={setNumberOfPoints} min={1} max={7} displayValue={`${numberOfPoints} argument${numberOfPoints > 1 ? 's' : ''}`} />
+          </div>}
 
         {/* Evidence Level - Only in Debunk mode */}
-        {mode === 'debunk' && (
-          <div className="space-y-3">
+        {mode === 'debunk' && <div className="space-y-3">
             <label className="text-sm font-medium flex items-center gap-2">
               <span className="w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-bold">
                 8
@@ -493,28 +393,18 @@ export function DebateGenerator({ onSave, viewingEntry, onClearView, initialMode
               Evidence Usage
             </label>
             <EvidenceSelector value={evidenceLevel} onChange={setEvidenceLevel} />
-          </div>
-        )}
+          </div>}
 
         {/* Generate Button */}
-        <Button
-          onClick={handleGenerate}
-          disabled={!topic.trim() || isGenerating}
-          className="w-full h-14 text-base font-semibold bg-primary hover:bg-primary/90"
-        >
-          {isGenerating ? (
-            <>
+        <Button onClick={handleGenerate} disabled={!topic.trim() || isGenerating} className="w-full h-14 text-base font-semibold bg-primary hover:bg-primary/90">
+          {isGenerating ? <>
               <Loader2 className="w-5 h-5 mr-2 animate-spin" />
               Generating Arguments...
-            </>
-          ) : (
-            <>
+            </> : <>
               <Sparkles className="w-5 h-5 mr-2" />
               {mode === 'debate' ? 'Start Debate' : 'Generate Arguments'}
-            </>
-          )}
+            </>}
         </Button>
       </div>
-    </div>
-  );
+    </div>;
 }
