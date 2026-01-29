@@ -11,8 +11,8 @@ export function HeroSection() {
       
       <div className="relative max-w-4xl mx-auto text-center px-6">
         {/* Headline */}
-        <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6 animate-fade-in">Debunk
-Think Sharper,
+        <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6 animate-fade-in">
+Think Sharper
 Debate Better.
 
         <span className="block text-accent mt-2">Debate Better.</span>
