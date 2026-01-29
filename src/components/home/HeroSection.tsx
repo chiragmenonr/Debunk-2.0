@@ -10,12 +10,15 @@ export function HeroSection() {
       </div>
       
       <div className="relative max-w-4xl mx-auto text-center px-6">
+        {/* App Name */}
+        <p className="text-sm uppercase tracking-widest text-accent font-semibold mb-4 animate-fade-in">
+          Debunk
+        </p>
+        
         {/* Headline */}
         <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6 animate-fade-in">
-Think Sharper
-Debate Better.
-
-        <span className="block text-accent mt-2">Debate Better.</span>
+          Think Sharper.
+          <span className="block text-accent mt-2">Debate Better.</span>
         </h1>
         
         {/* Tagline */}
